@@ -16,6 +16,10 @@
   }
 }
 
+* {
+  margin: 0;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -30,4 +34,16 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.navbar {
+  transition: background-color 0.3s ease-in-out;
+}
+
+.scrolled {
+  background-color: #111;
 }
