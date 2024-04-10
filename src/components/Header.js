@@ -28,15 +28,19 @@ export default function Header() {
         alt="Netflix Logo"
         width={128}
         height={32}
-        className="w-32 object-contain fixed left-5"
+        priority={true}
+        style={{ objectFit: "contain" }}
+        className="fixed left-5"
       />
 
       <Image
         src={netflixAvatar}
         alt="Netflix Avatar"
-        width={128}
+        width={44}
         height={32}
-        className="w-11 object-contain fixed right-5"
+        priority={true}
+        style={{ objectFit: "contain" }}
+        className="fixed right-5"
       />
     </nav>
   );
