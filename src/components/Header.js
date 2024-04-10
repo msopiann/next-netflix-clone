@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import netflixLogo from "../../public/img/netflixLogo.png";
-import netflixAvatar from "../../public/img/netflixAvatar.png";
+import netflixAvatar from "../../public/img/netflixAvatar.jpg";
 import Image from "next/image";
 
 export default function Header() {
