@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import netflixLogo from "../../public/img/netflixLogo.png";
 import netflixAvatar from "../../public/img/netflixAvatar.jpg";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   useEffect(() => {
@@ -23,15 +24,17 @@ export default function Header() {
   }, []);
   return (
     <nav className="navbar fixed top-0 flex justify-between w-full h-[4.5rem] p-4 bg-transparent z-10">
-      <Image
-        src={netflixLogo}
-        alt="Netflix Logo"
-        width={128}
-        height={32}
-        priority={true}
-        style={{ objectFit: "contain" }}
-        className="fixed left-5"
-      />
+      <Link href="/">
+        <Image
+          src={netflixLogo}
+          alt="Netflix Logo"
+          width={128}
+          height={32}
+          priority={true}
+          style={{ objectFit: "contain" }}
+          className="fixed left-5"
+        />
+      </Link>
 
       <Image
         src={netflixAvatar}

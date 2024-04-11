@@ -10,6 +10,7 @@ const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 export default function Banner() {
   const [movie, setMovie] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [releaseYear, setReleaseYear] = useState("");
   const [moviesWithCasters, setMoviesWithCasters] = useState([]);
   const [activeMovieCasters, setActiveMovieCasters] = useState([]);
   const [setError] = useState(null);
@@ -33,6 +34,9 @@ export default function Banner() {
         const movies = request.data.results.map((movie) => ({
           id: movie.id,
         }));
+
+        const releaseYear = randomMovie.release_date.split("-")[0];
+        setReleaseYear(releaseYear);
 
         const casterPromises = movies.map((movie) =>
           fetchMovieCasters(movie.id)
@@ -93,24 +97,41 @@ export default function Banner() {
       className="text-white object-contain h-[480px]"
       style={{
         backgroundSize: "cover",
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${base_Url}${movie?.backdrop_path})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+          window.innerWidth >= 768
+            ? `${base_Url}${movie?.backdrop_path}`
+            : `${base_Url}${movie?.poster_path}`
+        })`,
         backgroundPosition: "center center",
       }}
     >
       <div className="ml-8 pt-36 h-[190px]">
-        <h3 className="mb-2">{genres.map((genre) => genre.name).join(", ")}</h3>
+        <div className="mt-44 md:mt-0">
+          <h3 className="hidden md:block md:mb-2">
+            {genres.map((genre) => genre.name).join(", ")}
+          </h3>
 
-        <h1 className="text-3xl font-extrabold pb-1">
-          {movie.title || movie.name}
-        </h1>
+          <h1 className="text-3xl font-extrabold pb-1">
+            {movie.title || movie.name}
+          </h1>
 
-        <div className="banner__buttons">
-          <button className="cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] pl-8 pr-8 pt-2 pb-2 mr-4 bg-[rgba(51, 51, 51, 0.5)] text-black bg-white transition-all duration-200 hover:bg-transparent hover:text-white">
+          <div className="block mt-2 md:hidden">
+            <span>&#x2022; {genres.map((genre) => genre.name).join(", ")}</span>
+            <span className="ml-4">&#x2022; {releaseYear}</span>
+          </div>
+        </div>
+
+        <div className="mt-2 flex items-center">
+          <button className="w-1/2 md:w-[8rem] cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#E50914] text-white transition-all duration-200 hover:bg-transparent hover:text-white">
+            Watch
+          </button>
+
+          <button className="w-1/2 md:hidden cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#f0f0f0] text-black transition-all duration-200 hover:bg-transparent hover:text-white">
             Watch
           </button>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="hidden md:flex md:flex-col md:gap-2">
           <h3 className="w-[43rem] leading-[1.3] pt-4 pe-4 text-base text-justify max-w-[360px] min-h-[80px]">
             {truncate(movie.overview, 30)}
           </h3>

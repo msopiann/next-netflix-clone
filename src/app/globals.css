@@ -46,4 +46,11 @@ body {
 
 .scrolled {
   background-color: #000;
+  transition: background-color 0.3s ease-in-out;
+}
+
+@media (min-width: 992px) {
+  .footer-logo {
+    width: 20%; /* Adjust as needed */
+  }
 }

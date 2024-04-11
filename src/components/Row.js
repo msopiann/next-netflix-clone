@@ -18,6 +18,7 @@ export default function Row({ title, fetchUrl }) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUrl]);
+
   return (
     <div className="ml-5 text-white">
       <h2 className="text-bold text-xl">{title}</h2>
@@ -30,8 +31,12 @@ export default function Row({ title, fetchUrl }) {
             loading="lazy"
             sizes="100vw"
             style={{ width: "100%", height: "auto" }}
-            className="max-h-28 mr-2 transition-transform duration-450 hover:scale-110"
-            src={`${base_Url}${index.backdrop_path}`}
+            className="max-h-48 lg:max-h-28 mr-2 transition-transform duration-450 hover:scale-110"
+            src={
+              window.innerWidth >= 768
+                ? `${base_Url}${index.backdrop_path}`
+                : `${base_Url}${index.poster_path}`
+            }
             alt={index.title}
             key={index.id}
           />
