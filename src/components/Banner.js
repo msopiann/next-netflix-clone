@@ -2,6 +2,7 @@
 
 import instance from "@/app/api/axios";
 import requests from "@/app/api/requests";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const base_Url = "https://image.tmdb.org/t/p/original";
@@ -18,7 +19,7 @@ export default function Banner() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const request = await instance(requests.fetchTopRated);
+        const request = await instance(requests.fetchPopularMovies);
         const randomMovie =
           request.data.results[
             Math.floor(Math.random() * request.data.results.length - 1)
@@ -94,7 +95,7 @@ export default function Banner() {
 
   return (
     <header
-      className="text-white object-contain h-[480px]"
+      className="text-white object-contain h-[490px]"
       style={{
         backgroundSize: "cover",
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
@@ -121,23 +122,26 @@ export default function Banner() {
           </div>
         </div>
 
-        <div className="mt-2 flex items-center">
-          <button className="w-1/2 md:w-[8rem] cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#E50914] text-white transition-all duration-200 hover:bg-transparent hover:text-white">
+        <div className="mt-2 flex items-center text-center">
+          <Link
+            href={`/movie/${movie.id}`}
+            className="w-1/2 md:w-[8rem] cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#E50914] text-white transition-all duration-200 hover:bg-transparent hover:text-white"
+          >
             Watch
-          </button>
+          </Link>
 
           <button className="w-1/2 md:hidden cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#f0f0f0] text-black transition-all duration-200 hover:bg-transparent hover:text-white">
-            Watch
+            + My List
           </button>
         </div>
 
         <div className="hidden md:flex md:flex-col md:gap-2">
-          <h3 className="w-[43rem] leading-[1.3] pt-4 pe-4 text-base text-justify max-w-[360px] min-h-[80px]">
+          <h3 className="w-[46rem] leading-[1.3] pt-4 pe-4 text-base text-justify max-w-[360px] min-h-[80px]">
             {truncate(movie.overview, 30)}
           </h3>
 
-          <h3 className="w-[43rem] leading-[1.3] pe-6 text-base text-justify max-w-[360px] min-h-[80px]">
-            Cast:{" "}
+          <h3 className="w-[46rem] leading-[1.3] pe-6 text-base text-justify max-w-[360px] min-h-[80px]">
+            Starring:{" "}
             {activeMovieCasters.map((caster, index, array) => (
               <span key={caster.id} className="font-bold">
                 {caster.name}

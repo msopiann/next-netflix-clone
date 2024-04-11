@@ -11,7 +11,14 @@ export default function Home() {
       <Banner />
 
       <div className="my-4">
-        <Row title="Romance Movies" fetchUrl={requests.fetchRomanceMovies} />
+        <Row
+          title="Netflix Originals"
+          fetchUrl={requests.fetchNeflixOriginals}
+        />
+        <Row title="Trending Now" fetchUrl={requests.fetchTrending} />
+        <Row title="Action Movies" fetchUrl={requests.fetchActionMovies} />
+        <Row title="Comedy Movies" fetchUrl={requests.fetchComedyMovies} />
+        <Row title="Horror Movies" fetchUrl={requests.fetchHorrorMovies} />
       </div>
 
       <Footer />

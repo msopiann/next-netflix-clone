@@ -19,6 +19,11 @@ export default function Row({ title, fetchUrl }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUrl]);
 
+  function imageClick(event, url) {
+    event.preventDefault();
+    window.location = url;
+  }
+
   return (
     <div className="ml-5 text-white">
       <h2 className="text-bold text-xl">{title}</h2>
@@ -39,6 +44,7 @@ export default function Row({ title, fetchUrl }) {
             }
             alt={index.title}
             key={index.id}
+            onClick={(e) => imageClick(e, `/movie/${index.id}`)}
           />
         ))}
       </div>
