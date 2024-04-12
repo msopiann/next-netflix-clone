@@ -15,7 +15,7 @@ export default function Home() {
           title="Netflix Originals"
           fetchUrl={requests.fetchNeflixOriginals}
         />
-        <Row title="Popular Movies" fetchUrl={requests.fetchPopularMovies} />
+        <Row title="Now Playing" fetchUrl={requests.fetchNowPlaying} />
         <Row title="Action Movies" fetchUrl={requests.fetchActionMovies} />
         <Row title="Comedy Movies" fetchUrl={requests.fetchComedyMovies} />
         <Row title="Horror Movies" fetchUrl={requests.fetchHorrorMovies} />

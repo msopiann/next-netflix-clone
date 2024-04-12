@@ -13,6 +13,7 @@ const requests = {
   fetchPopularMovies: `/movie/popular?api_key=${API_KEY}&language=en-US`,
   // fetchGenreListTV: `/genre/tv/list?api_key=${API_KEY}`,
   fetchGenreList: `/genre/movie/list?api_key=${API_KEY}`,
+  fetchNowPlaying: `/movie/now_playing?api_key=${API_KEY}&language=en-US`,
 };
 
 export default requests;
