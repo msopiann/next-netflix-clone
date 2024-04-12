@@ -15,6 +15,7 @@ export default function Banner() {
   const [moviesWithCasters, setMoviesWithCasters] = useState([]);
   const [activeMovieCasters, setActiveMovieCasters] = useState([]);
   const [setError] = useState(null);
+  const [bgImageUrl, setBgImageUrl] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -84,6 +85,21 @@ export default function Banner() {
     }
   }, [movie, moviesWithCasters]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const newBgImageUrl =
+        window.innerWidth >= 768
+          ? `${base_Url}${movie?.backdrop_path}`
+          : `${base_Url}${movie?.poster_path}`;
+      setBgImageUrl(newBgImageUrl);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call initially to set the image on mount
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [movie]);
+
   function truncate(str, n) {
     if (!str) return "";
 
@@ -98,11 +114,7 @@ export default function Banner() {
       className="text-white object-contain h-[490px]"
       style={{
         backgroundSize: "cover",
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
-          window.innerWidth >= 768
-            ? `${base_Url}${movie?.backdrop_path}`
-            : `${base_Url}${movie?.poster_path}`
-        })`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bgImageUrl})`,
         backgroundPosition: "center center",
       }}
     >

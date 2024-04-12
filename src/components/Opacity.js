@@ -21,7 +21,7 @@ export default function Opacity() {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 h-12"
+      className="fixed inset-0 bg-black bg-opacity-50 h-12 md:hidden"
       style={{ opacity: opacity, zIndex: 10 }}
     >
       <div className="ml-3">
