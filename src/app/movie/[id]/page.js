@@ -209,7 +209,7 @@ export default function MoviePage({ params }) {
 
       <div className="hidden md:block md:mt-28 md:mx-8">
         <div className="flex mx-auto p-4">
-          <div className="flex items-center w-1/4 mb-4 mr-8">
+          <div className="flex items-center w-1/4 mr-8">
             <Image
               src={`${base_Url}${movie.poster_path}`}
               alt={movie.title || movie.name}
@@ -221,9 +221,9 @@ export default function MoviePage({ params }) {
             />
           </div>
 
-          <div className="flex flex-col w-3/4 mb-4 ml-4 gap-2">
+          <div className="flex flex-col w-3/4 mb-4 ml-4">
             <div className="flex w-full">
-              <div className="p-6 w-full h-36">
+              <div className="p-6 w-full">
                 <h1 className="font-extrabold text-4xl">
                   {movie.title || movie.name}
                 </h1>
@@ -244,7 +244,7 @@ export default function MoviePage({ params }) {
                 </span>
               </div>
 
-              <div className="flex items-center justify-center mt-6 mr-6 p-6 text-2xl">
+              <div className="flex items-center justify-center mr-6 p-6 text-2xl">
                 {movie.vote_average}{" "}
                 <span className="ml-2 -mt-1">
                   <FaStar color="yellow" />
