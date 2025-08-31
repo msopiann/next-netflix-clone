@@ -2,166 +2,126 @@
 
 import instance from "@/app/api/axios";
 import requests from "@/app/api/requests";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 const base_Url = "https://image.tmdb.org/t/p/original";
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 export default function Banner() {
-  const [movie, setMovie] = useState([]);
-  const [genres, setGenres] = useState([]);
-  const [releaseYear, setReleaseYear] = useState("");
-  const [moviesWithCasters, setMoviesWithCasters] = useState([]);
-  const [activeMovieCasters, setActiveMovieCasters] = useState([]);
-  const [setError] = useState(null);
+  const [movie, setMovie] = useState(null);
+  const [trailerKey, setTrailerKey] = useState(null);
   const [bgImageUrl, setBgImageUrl] = useState("");
+  const [showTrailer, setShowTrailer] = useState(false);
+  const [cast, setCast] = useState([]);
+
+  const fetchMovieTrailer = async (movieId) => {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`
+    );
+    const data = await res.json();
+    const trailer = data.results.find(
+      (vid) => vid.type === "Trailer" && vid.site === "YouTube"
+    );
+    return trailer ? trailer.key : null;
+  };
+
+  const fetchMovieCast = async (movieId) => {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${API_KEY}`
+    );
+    const data = await res.json();
+    return data.cast.slice(0, 5); // ambil 5 pemeran utama
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const request = await instance(requests.fetchPopularMovies);
-        const randomMovie =
-          request.data.results[
-            Math.floor(Math.random() * request.data.results.length - 1)
-          ];
-        setMovie(randomMovie);
+    async function initMovie() {
+      const request = await instance(requests.fetchPopularMovies);
+      const results = request.data.results;
 
-        const genreResponse = await instance(requests.fetchGenreList);
-        const movieGenres = genreResponse.data.genres.filter((genre) =>
-          randomMovie.genre_ids.includes(genre.id)
-        );
-        setGenres(movieGenres);
+      const randomMovie = results[Math.floor(Math.random() * results.length)];
+      setMovie(randomMovie);
 
-        const movies = request.data.results.map((movie) => ({
-          id: movie.id,
-        }));
-
-        const releaseYear = randomMovie.release_date.split("-")[0];
-        setReleaseYear(releaseYear);
-
-        const casterPromises = movies.map((movie) =>
-          fetchMovieCasters(movie.id)
-        );
-        const allCasters = await Promise.all(casterPromises);
-        const moviesWithCombinedCasters = movies.map((movie, index) => ({
-          ...movie,
-          casters: allCasters[index].slice(0, 5),
-        }));
-
-        setMoviesWithCasters(moviesWithCombinedCasters);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    const fetchMovieCasters = async (movieId) => {
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${API_KEY}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch movie casters");
-        }
-
-        const data = await response.json();
-        return data.cast;
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (movie.id && moviesWithCasters.length > 0) {
-      const activeMovieData = moviesWithCasters.find((m) => m.id === movie.id);
-      if (activeMovieData) {
-        setActiveMovieCasters(activeMovieData.casters);
-      }
-    }
-  }, [movie, moviesWithCasters]);
-
-  useEffect(() => {
-    const handleResize = () => {
+      // set image dulu
       const newBgImageUrl =
         window.innerWidth >= 768
-          ? `${base_Url}${movie?.backdrop_path}`
-          : `${base_Url}${movie?.poster_path}`;
+          ? `${base_Url}${randomMovie?.backdrop_path}`
+          : `${base_Url}${randomMovie?.poster_path}`;
       setBgImageUrl(newBgImageUrl);
-    };
 
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Call initially to set the image on mount
+      // fetch trailer + cast
+      const key = await fetchMovieTrailer(randomMovie.id);
+      setTrailerKey(key);
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, [movie]);
+      const casts = await fetchMovieCast(randomMovie.id);
+      setCast(casts);
 
-  function truncate(str, n) {
-    if (!str) return "";
+      // setelah 5 detik → tampilkan trailer
+      setTimeout(() => {
+        if (key) setShowTrailer(true);
+      }, 10000);
+    }
 
-    const words = str.split(" ");
-    if (words.length <= n) return str;
-
-    return words.slice(0, n).join(" ") + "...";
-  }
+    initMovie();
+  }, []);
 
   return (
-    <header
-      className="text-white object-contain h-[490px]"
-      style={{
-        backgroundSize: "cover",
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bgImageUrl})`,
-        backgroundPosition: "center center",
-      }}
-    >
-      <div className="ml-8 pt-36 h-[190px]">
-        <div className="mt-44 md:mt-0">
-          <h3 className="hidden md:block md:mb-2">
-            {genres.map((genre) => genre.name).join(", ")}
-          </h3>
+    <header className="relative h-[700px] text-white overflow-hidden">
+      {/* Background */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+        {!showTrailer || !trailerKey ? (
+          <div
+            className="w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgImageUrl})` }}
+          />
+        ) : (
+          <iframe
+            src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${trailerKey}`}
+            title="Movie trailer"
+            allow="autoplay; encrypted-media"
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+              width: "100%",
+              height: "100%",
+              transform: "scale(1.5)", // biar nutup black space
+            }}
+          />
+        )}
+        <div className="absolute top-0 left-0 w-full h-full bg-black/50" />
+      </div>
 
-          <h1 className="text-3xl font-extrabold pb-1">
-            {movie.title || movie.name}
-          </h1>
+      {/* Konten */}
+      <div className="relative z-10 ml-8 pt-60">
+        <h1 className="text-3xl font-extrabold pb-2">
+          {movie?.title || movie?.name}
+        </h1>
+        <p className="w-[46rem] max-w-[360px] leading-[1.3] pt-2 text-base text-justify">
+          {movie?.overview?.split(" ").slice(0, 30).join(" ")}...
+        </p>
 
-          <div className="block mt-2 md:hidden">
-            <span>&#x2022; {genres.map((genre) => genre.name).join(", ")}</span>
-            <span className="ml-4">&#x2022; {releaseYear}</span>
-          </div>
-        </div>
-
-        <div className="mt-2 flex items-center text-center">
+        {/* tombol */}
+        <div className="mt-4 flex gap-4">
           <Link
-            href={`/movie/${movie.id}`}
-            className="w-1/2 md:w-[8rem] cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#E50914] text-white transition-all duration-200 hover:bg-transparent hover:text-white"
+            href={`/movie/${movie?.id}`}
+            className="cursor-pointer px-6 py-2 rounded bg-[#E50914] font-semibold hover:bg-[#E50914]/80 transition"
           >
             Watch
           </Link>
-
-          <button className="w-1/2 md:hidden cursor-pointer outline-none border-none font-semibold rounded-[0.2vw] px-8 py-2 mr-4 bg-[#f0f0f0] text-black transition-all duration-200 hover:bg-transparent hover:text-white">
+          <button className="cursor-pointer px-6 py-2 rounded bg-gray-300 text-black font-semibold hover:bg-gray-400 transition">
             + My List
           </button>
         </div>
 
-        <div className="hidden md:flex md:flex-col md:gap-2">
-          <h3 className="w-[46rem] leading-[1.3] pt-4 pe-4 text-base text-justify max-w-[360px] min-h-[80px]">
-            {truncate(movie.overview, 30)}
-          </h3>
-
-          <h3 className="w-[46rem] leading-[1.3] pe-6 text-base text-justify max-w-[360px] min-h-[80px]">
-            Starring:{" "}
-            {activeMovieCasters.map((caster, index, array) => (
-              <span key={caster.id} className="font-bold">
-                {caster.name}
-                {index === array.length - 1 ? "." : ", "}
-              </span>
-            ))}
-          </h3>
-        </div>
+        {/* Starring */}
+        <h3 className="mt-4 text-base max-w-[360px]">
+          Starring:{" "}
+          {cast.map((c, idx) => (
+            <span key={c.id} className="font-bold">
+              {c.name}
+              {idx === cast.length - 1 ? "." : ", "}
+            </span>
+          ))}
+        </h3>
       </div>
     </header>
   );
